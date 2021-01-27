@@ -1,11 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.1259
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PortablePsychopyLauncher", "PortablePsychopyLauncher\PortablePsychopyLauncher.vcxproj", "{99C2F504-91A3-4E6D-AE9B-DE6C21471047}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PortableIPythonLauncher", "PortableIPythonLauncher\PortableIPythonLauncher.vcxproj", "{3ED61AB6-FDAA-40ED-8821-B22E6B733E47}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPPLauncher_CopyConfig", "PPPLauncher_CopyConfig\PPPLauncher_CopyConfig.vcxproj", "{994EADC6-8066-445B-8A29-A11906B5922A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,12 +21,11 @@ Global
 		{3ED61AB6-FDAA-40ED-8821-B22E6B733E47}.Debug|Win32.Build.0 = Debug|Win32
 		{3ED61AB6-FDAA-40ED-8821-B22E6B733E47}.Release|Win32.ActiveCfg = Release|Win32
 		{3ED61AB6-FDAA-40ED-8821-B22E6B733E47}.Release|Win32.Build.0 = Release|Win32
-		{994EADC6-8066-445B-8A29-A11906B5922A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{994EADC6-8066-445B-8A29-A11906B5922A}.Debug|Win32.Build.0 = Debug|Win32
-		{994EADC6-8066-445B-8A29-A11906B5922A}.Release|Win32.ActiveCfg = Release|Win32
-		{994EADC6-8066-445B-8A29-A11906B5922A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8FDBE2D9-5D22-4A4E-BEEA-D770036F0162}
 	EndGlobalSection
 EndGlobal
