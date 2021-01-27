@@ -55,6 +55,7 @@
 ipch
 [Dd]ebug*/
 [Rr]elease*/
+*.db
 
 #Windows
 Thumbs.db
