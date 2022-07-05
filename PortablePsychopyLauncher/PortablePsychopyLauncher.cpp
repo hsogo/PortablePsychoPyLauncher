@@ -224,28 +224,28 @@ int APIENTRY _tWinMain(
 
 	/*
 	FINDDIR=C:\WINDOWS\system32
-	HOME=C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\settings
-	Path=C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\Lib\site-packages\PyQt5;
-	     C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\Lib\site-packages\PyQt4;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\Lib\site-packages\PySide2;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\DLLs;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\Scripts;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\..\t;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\..\t\mingw32\bin;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\..\t\R\bin\x64;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\..\t\Julia\bin;
-		 C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\..\t\n;
+	HOME=python_path\settings
+	Path=python_path\python-3.6.7.amd64\Lib\site-packages\PyQt5;
+	     python_path\python-3.6.7.amd64\Lib\site-packages\PyQt4;
+		 python_path\python-3.6.7.amd64\Lib\site-packages\PySide2;
+		 python_path\python-3.6.7.amd64\;
+		 python_path\python-3.6.7.amd64\DLLs;
+		 python_path\python-3.6.7.amd64\Scripts;
+		 python_path\python-3.6.7.amd64\..\t;
+		 python_path\python-3.6.7.amd64\..\t\mingw32\bin;
+		 python_path\python-3.6.7.amd64\..\t\R\bin\x64;
+		 python_path\python-3.6.7.amd64\..\t\Julia\bin;
+		 python_path\python-3.6.7.amd64\..\t\n;
 		 C:\Users\Hiroyuki\AppData\Local\Programs\Python\Python36-32;
 	QT_API=pyqt5
-	tmp_pyz=C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64\Lib\site-packages\PyQt4\qt.conf
+	tmp_pyz=python_path\python-3.6.7.amd64\Lib\site-packages\PyQt4\qt.conf
 	WINPYARCH = WIN-AMD64
 	WINPYDEBUG = disabled
-	WINPYDIR = C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\python-3.6.7.amd64
-	WINPYDIRBASE = C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0
-	winpython_ini = C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\settings\winpython.ini
+	WINPYDIR = python_path\python-3.6.7.amd64
+	WINPYDIRBASE = python_path
+	winpython_ini = python_path\settings\winpython.ini
 	WINPYVER = 3.6.7.0Zero
-	WINPYWORKDIR = C:\Users\Hiroyuki\Desktop\WinPython-64bit-3.6.7.0-PsychoPy3.0.0\scripts\..\Notebooks
+	WINPYWORKDIR = python_path\scripts\..\Notebooks
 	*/
 
 	_stprintf_s(szCmd, _T("\"%s\\%s\\pythonw.exe\" -m psychopy.app.psychopyApp"), szWinPythonDir, szPythonDir);
