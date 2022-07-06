@@ -7,9 +7,22 @@
 #include <tchar.h>
 #include <shlwapi.h>
 #include <fstream>
+#include <string>
+#include "resource.h"
 
 #define TCHAR_SIZE(buf) (sizeof(buf)/sizeof(TCHAR))
 
+TCHAR szTmp[4096];
+TCHAR szCmd[1024];
+TCHAR szHomeDir[512];
+TCHAR szWinPythonDir[512];
+TCHAR szPythonDir[512];
+TCHAR szPythonDirFull[1024];
+TCHAR szPsychoPyDir[512];
+TCHAR szPath[2048];
+
+TCHAR szPsychoPyConfigDir[1024];
+TCHAR szAppDataDir[512];
 
 //From: http://www.hiramine.com/programming/windows/copydirectory.html
 BOOL CopyDirectory(LPCTSTR lpExistingDirectoryName,
@@ -117,25 +130,70 @@ BOOL findDirectory(LPCTSTR lpTargetDir, LPCTSTR lpSearchName, LPTSTR foundDirNam
 	return found;
 }
 
-int APIENTRY _tWinMain(
-    HINSTANCE hInstance, 
-    HINSTANCE hPrevInstance, 
-    LPTSTR lpCmdLine, 
-    int nCmdShow)
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lp) {
+	TCHAR strWindowText[1024];
+	BOOL* pfound = (BOOL*)lp;
+	GetWindowText(hwnd, strWindowText, 1024);
+
+	std::basic_string<TCHAR> wt = strWindowText;
+	if (wt.find(_T("PsychoPy Runner"))!= std::string::npos || wt.find(_T("PsychoPy Builder"))!= std::string::npos || wt.find(_T("PsychoPy Coder"))!= std::string::npos)
+	{
+		*pfound = TRUE;
+		return FALSE;
+	}
+	return TRUE;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	TCHAR szTmp[4096];
-	TCHAR szCmd[1024];
-	TCHAR szHomeDir[512];
-	TCHAR szWinPythonDir[512];
-	TCHAR szPythonDir[512];
-	TCHAR szPythonDirFull[1024];
-	TCHAR szPsychoPyDir[512];
-	TCHAR szPath[2048];
+	HDC hdc;
+	PAINTSTRUCT ps;
+	static HFONT hFont, hFontPrev;
+	static TCHAR szText[] = _T("Starting PsychoPy. Please wait...");
 
-	TCHAR szPsychoPyConfigDir[1024];
-	TCHAR szAppDataDir[512];
-	size_t requiredSize;
+	switch (msg) {
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		hFont = (HFONT)GetStockObject(ANSI_VAR_FONT);
+		hFontPrev = (HFONT)SelectObject(hdc, hFont);
+		TextOut(hdc, 10, 10, szText, lstrlen(szText));
+		SelectObject(hdc, hFontPrev);
+		EndPaint(hWnd, &ps);
+		break;
 
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		return (DefWindowProc(hWnd, msg, wp, lp));
+	}
+	return 0L;
+}
+
+DWORD WINAPI findPsychoPyWindowThread(void* param)
+{
+	HWND* phWnd = (HWND*)param;
+	BOOL found = FALSE;
+	while (!found) {
+		EnumWindows(EnumWindowsProc, (LPARAM)&found);
+		Sleep(500);
+	}
+	SendMessage(*phWnd, WM_CLOSE, NULL, NULL);
+
+	return 0;
+}
+
+
+int ppl_main(
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPTSTR lpCmdLine,
+	int nCmdShow)
+{
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 
@@ -250,6 +308,7 @@ int APIENTRY _tWinMain(
 
 	_stprintf_s(szCmd, _T("\"%s\\%s\\pythonw.exe\" -m psychopy.app.psychopyApp"), szWinPythonDir, szPythonDir);
 
+	size_t requiredSize;
 	if (copy_config) {
 		// Get full path of %APPDATA%\psychopy3 directory	
 		_tgetenv_s(&requiredSize, NULL, 0, _T("APPDATA"));
@@ -274,16 +333,69 @@ int APIENTRY _tWinMain(
 		}
 	}
 
+	WNDCLASS wc;
+	HWND hWnd;
+	MSG msg;
+	HANDLE hThread;
+	LPCWSTR szClassName = _T("PortablePsychoPyLauncher");
+
+	ZeroMemory(&wc, sizeof(WNDCLASS));
+	if (!hPrevInstance) {
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc = WndProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = 0;
+		wc.hInstance = hInstance;
+		wc.hIcon = LoadIcon(hInstance, (PCWSTR)IDI_ICON1);
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.lpszMenuName = NULL;
+		wc.lpszClassName = szClassName;
+		if (!RegisterClass(&wc)) {
+			DWORD e;
+			e= GetLastError();
+			MessageBox(NULL, _T("Can't register class"), _T("Error"), MB_ICONERROR);
+			return -1;
+		}
+	}
+
+	hWnd = CreateWindow(szClassName,
+		_T("PortablePsychoPyLauncer"),
+		WS_OVERLAPPED,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		300, 100, NULL, NULL,
+		hInstance, NULL);
+	if (!hWnd) {
+		MessageBox(NULL, _T("Can't open window"), _T("Error"), MB_ICONERROR);
+		return -1;
+	}
+	
+	hThread = CreateThread(NULL, 0, findPsychoPyWindowThread, (void*)&hWnd, 0, NULL);
+	if (hThread == NULL) {
+		MessageBox(NULL, _T("Can't start thread"), _T("Error"), MB_ICONERROR);
+		return -1;
+	}
+
 	// Start PsychoPy
 	if (!CreateProcess(
 		NULL, szCmd, NULL, NULL, FALSE,
-		NULL, NULL, NULL, &si, &pi)){
+		NULL, NULL, NULL, &si, &pi)) {
 		_stprintf_s(szTmp, _T("Could not start PortablePsychoPy.\n\ncommand:\n%s"), szCmd);
 		MessageBox(NULL, szTmp, _T("Error"), MB_ICONERROR);
+		CloseHandle(hThread);
 		return -1;
 	}
+
+	ShowWindow(hWnd, SW_SHOW);
+	UpdateWindow(hWnd);
+	while (GetMessage(&msg, NULL, NULL, NULL)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
 	// Waiting...
 	DWORD r = WaitForSingleObject(pi.hProcess, INFINITE);
+	CloseHandle(hThread);
 
 	switch (r) {
 	case WAIT_FAILED:
@@ -315,6 +427,10 @@ int APIENTRY _tWinMain(
 		return -1;
 	}
 
+	//Close handles
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+
 	//Normal termination
 	if (copy_config) {
 		//Copy configuration from %APPDATA%\psychopy3
@@ -336,4 +452,31 @@ int APIENTRY _tWinMain(
 	}
 	return exitCode;
 
+}
+
+
+
+int APIENTRY _tWinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPTSTR lpCmdLine,
+	_In_ int nCmdShow)
+{
+	int exit_code = 0;
+	HANDLE hMutex;
+	hMutex = CreateMutex(NULL, TRUE, _T("PortablePsychoPyLauncherMutex"));
+	if (hMutex == NULL || GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		MessageBox(NULL, _T("PortablePsychoPyLauncher is already running."), _T("Error"), MB_ICONERROR);
+		return -1;
+	}
+	else
+	{
+		exit_code = ppl_main(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	}
+
+	ReleaseMutex(hMutex);
+	CloseHandle(hMutex);
+
+	return exit_code;
 }
